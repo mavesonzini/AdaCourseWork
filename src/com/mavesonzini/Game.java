@@ -8,87 +8,148 @@ import java.util.ArrayList;
  */
 public class Game extends JFrame {
     StringScanner scan = new StringScanner();
-    JButton radioButtonA;
-    JButton radioButtonB;
-    JButton radioButtonC;
-    JButton radioButtonD;
+    JRadioButton radioButtonA;
+    JRadioButton radioButtonB;
+    JRadioButton radioButtonC;
+    JRadioButton radioButtonD;
 
     JLabel scoreCounter;
     JLabel questionLabel;
     JLabel answerLabel;
     JLabel messageLabel;
 
-    int counter = 0;
-    ArrayList<Quiz> questionList = new ArrayList<Quiz>();
-    int correctAnswerCounter = 0;
-    int questionCounter = 1;
+    JPanel panel;
+    ButtonGroup buttonGroup;
 
-    public Game(){
+    int score = 0;
+    Quiz[] questionList = new Quiz[10];
+    Quiz currentQuiz;
+
+    int correctAnswerCounter = 0;
+    int questionCounter = 0;
+
+    public Game() {
         loadQuestions();
-        radioButtons();
+        createButtons();
         updateScreen();
     }
 
-    public void radioButtons(){
-        ButtonGroup buttonGroup = new ButtonGroup();
+    public void createButtons() {
+        this.buttonGroup = new ButtonGroup();
         JRadioButton radioButton = new JRadioButton();
 
         JOptionPane.showMessageDialog(null, "Are you ready?\nTo Start Press 'OK'", "Game of Thrones Quiz", JOptionPane.DEFAULT_OPTION);
-        JPanel panel = new JPanel();
+        this.panel = new JPanel();
+        this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.PAGE_AXIS));
+        JPanel questionPanel = new JPanel();
 
-        JRadioButton button1 = new JRadioButton("Answer 1");
-        buttonGroup.add(button1);
-        panel.add(button1);
+        this.questionLabel = new JLabel("Question");
+        questionPanel.add(questionLabel);
 
-        JRadioButton button2 = new JRadioButton("Answer 2");
-        buttonGroup.add(button2);
-        panel.add(button2);
+        panel.add(questionPanel);
 
-        JRadioButton button3 = new JRadioButton("Answer 3");
-        buttonGroup.add(button3);
-        panel.add(button3);
+        JPanel answersPanel = new JPanel();
 
-        JRadioButton button4 = new JRadioButton("Answer 4");
-        buttonGroup.add(button4);
-        panel.add(button4);
+        this.radioButtonA = new JRadioButton("Answer 1");
+        buttonGroup.add(radioButtonA);
+        answersPanel.add(radioButtonA);
+
+        this.radioButtonB = new JRadioButton("Answer 2");
+        buttonGroup.add(radioButtonB);
+        answersPanel.add(radioButtonB);
+
+        this.radioButtonC = new JRadioButton("Answer 3");
+        buttonGroup.add(radioButtonC);
+        answersPanel.add(radioButtonC);
+
+        this.radioButtonD = new JRadioButton("Answer 4");
+        buttonGroup.add(radioButtonD);
+        answersPanel.add(radioButtonD);
+
+        panel.add(answersPanel);
+
+        JPanel messagePanel = new JPanel();
+
+        this.messageLabel = new JLabel("Message");
+        messagePanel.add(messageLabel);
+
+        panel.add(messagePanel);
+
+        this.scoreCounter = new JLabel("0");
+        updateScore();
+        panel.add(scoreCounter);
+    }
+
+    public int getSelectedIndex() {
+        if (radioButtonA.isSelected()) {
+            return 0;
+        } else if (radioButtonB.isSelected()) {
+            return 1;
+        } else if (radioButtonC.isSelected()) {
+            return 2;
+        } else {
+            return 3;
+        }
+    }
+
+    public void radioButtons(){
+
+        buttonGroup.clearSelection();
 
         String[] buttonsArray = {"Finish", "Next", "Previous"};
-        int buttonOption = JOptionPane.showOptionDialog(null, panel, "This is a title!", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, buttonsArray, null);
+
+        int buttonOption = JOptionPane.showOptionDialog(null, this.panel, "Do you know the answer???", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, buttonsArray, null);
+        System.out.println("button option selected");
         System.out.println(buttonOption);
 
-        int buttonSelection = 2;
+        System.out.println("Right Answer");
+        System.out.println(currentQuiz.getRightAnswerIndex());
 
-        switch (buttonSelection){
-            case 1:
+        System.out.println("Selected Answer");
+        System.out.println(getSelectedIndex());
+
+        switch (buttonOption){
+            case 2:
                 previousQuestion();
                 break;
-            case 2:
+            case 1:
+                if (isRightAnswer()) {
+                    score++;
+                    updateScore();
+                }
                 nextQuestion();
                 break;
-            case 3:
-                finishGame();
+            case 0:
+                endScreen();
                 break;
         }
     }
 
-    public void checkAnswer(String guess){
+    public void updateScore() {
+        scoreCounter.setText("Score: " + score);
+    }
 
+    public boolean isRightAnswer() {
+        return currentQuiz.getRightAnswerIndex() == getSelectedIndex();
     }
 
     public void nextQuestion(){
+        System.out.println("next question called");
+
         questionCounter ++;
-        if (questionCounter >= questionList.size()){
+        if (questionCounter >= questionList.length){
             endScreen();
             System.out.println("The End!");
             System.out.println(correctAnswerCounter);
-        }
+        } else {
             updateScreen();
+        }
     }
 
     public void previousQuestion(){
         questionCounter --;
-        if(questionCounter <= 0){
-            counter = 0;
+        if(questionCounter < 0){
+            questionCounter = 0;
         }
         updateScreen();
     }
@@ -102,7 +163,10 @@ public class Game extends JFrame {
     }
 
     public void loadQuestions(){
-        scan.StringScanner();
+        System.out.println("load questions called");
+
+        questionList =  scan.StringScanner();
+
     }
 
     public void endScreen(){
@@ -111,14 +175,14 @@ public class Game extends JFrame {
     }
 
     public void updateScreen() {
-        scoreCounter.setText("Question " + Integer.toString(questionCounter++));
-        Quiz question = questionList.get(counter);
-        questionLabel.setText(question.getQuestion());
-        radioButtonA.setText(question.getAnswer1());
-        radioButtonB.setText(question.getAnswer2());
-        radioButtonC.setText(question.getAnswer3());
-        radioButtonD.setText(question.getAnswer4());
+        currentQuiz = questionList[questionCounter];
+        questionLabel.setText(currentQuiz.getQuestion());
+        radioButtonA.setText(currentQuiz.getAnswer1());
+        radioButtonB.setText(currentQuiz.getAnswer2());
+        radioButtonC.setText(currentQuiz.getAnswer3());
+        radioButtonD.setText(currentQuiz.getAnswer4());
         messageLabel.setText("Please select ONE answer");
+        radioButtons();
     }
 
 }

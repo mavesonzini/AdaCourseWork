@@ -16,7 +16,7 @@ public class StringScanner {
         int j = 0;
 
         String[] questionsArray = new String[10];
-        String[][] answersArray = new String[10][4];
+        String[][] answersArray = new String[10][5];
         String[] correctAnswersArray = new String[10];
 
         Quiz[] parsedQuestions = new Quiz[10];
@@ -29,15 +29,20 @@ public class StringScanner {
                 questionsArray[i] = scanQuestion.nextLine();
                 i++;
             }
-            System.out.println(Arrays.toString(questionsArray));
+//            System.out.println(Arrays.toString(questionsArray));
 
             File easyAnswers = new File("EasyAnswers.txt");
-            scanAnswer = new Scanner(easyAnswers).useDelimiter("\t");
+            scanAnswer = new Scanner(easyAnswers).useDelimiter(", ");
 
             i = 0;
+            j = 0;
             while (scanAnswer.hasNext()){
-                answersArray[i][j] = scanAnswer.next();
-                if (j == 3) {
+                String answer = scanAnswer.next();
+                System.out.println("Parsed answer: " + answer);
+                System.out.println("i = " + i + ", j = " + j);
+                answersArray[i][j] = answer;
+                if (j == 4) {
+                    System.out.println(Arrays.deepToString(answersArray[i]));
                     j = 0;
                     i++;
                 } else {
@@ -47,11 +52,15 @@ public class StringScanner {
             System.out.println(Arrays.deepToString(answersArray));
 
             i = 0;
+
             for (i = 0; i < 10; i++){
                 String individualQuestion = questionsArray[i];
                 String[] answers = answersArray[i];
+                System.out.println(answers[4]);
 
-                Quiz question = new Quiz(individualQuestion, answers[0], answers[1], answers[2], answers[3]);
+                int index = Integer.parseInt(answers[4]);
+                Quiz quiz = new Quiz(individualQuestion, answers[0], answers[1], answers[2], answers[3], index);
+                parsedQuestions[i] = quiz;
             }
 
             File correctAnswers = new File("correctAnswers.txt");
@@ -62,7 +71,6 @@ public class StringScanner {
                 correctAnswersArray[i] = scanCorrectAnswers.nextLine();
                 i++;
             }
-            System.out.println(Arrays.toString(correctAnswersArray));
 
         } catch (IOException ioe){
             System.out.println("Problem reading from the file " + ioe.getLocalizedMessage());
