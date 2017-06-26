@@ -28,6 +28,6 @@ public class End extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e){
         setVisible(false);
-        new Quiz();
+        new Game();
     }
 }

@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class StringScanner {
 
-    public Question[] StringScanner (){
+    public Quiz[] StringScanner (){
 
         Scanner scanQuestion;
         Scanner scanAnswer;
@@ -19,7 +19,7 @@ public class StringScanner {
         String[][] answersArray = new String[10][4];
         String[] correctAnswersArray = new String[10];
 
-        Question[] parsedQuestions = new Question[10];
+        Quiz[] parsedQuestions = new Quiz[10];
 
         try {
             File easyQuestions = new File("EasyQuestions.txt");
@@ -51,7 +51,7 @@ public class StringScanner {
                 String individualQuestion = questionsArray[i];
                 String[] answers = answersArray[i];
 
-                Question question = new Question(individualQuestion, answers[0], answers[1], answers[2], answers[3]);
+                Quiz question = new Quiz(individualQuestion, answers[0], answers[1], answers[2], answers[3]);
             }
 
             File correctAnswers = new File("correctAnswers.txt");
