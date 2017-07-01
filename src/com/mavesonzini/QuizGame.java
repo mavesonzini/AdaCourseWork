@@ -11,11 +11,8 @@ public class QuizGame {
     JButton radioButtonB;
     JButton radioButtonC;
     JButton radioButtonD;
-
-    JLabel scoreCounter;
     JLabel questionLabel;
-    JLabel answerLabel;
-    JLabel messageLabel;
+
 
     ArrayList<Quiz> questionList = new ArrayList<Quiz>();
 

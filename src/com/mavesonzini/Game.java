@@ -1,7 +1,10 @@
 package com.mavesonzini;
 
+import com.sun.codemodel.internal.JOp;
+
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mave on 31/05/2017.
@@ -15,7 +18,6 @@ public class Game extends JFrame {
 
     JLabel scoreCounter;
     JLabel questionLabel;
-    JLabel answerLabel;
     JLabel messageLabel;
 
     JPanel panel;
@@ -23,6 +25,7 @@ public class Game extends JFrame {
 
     int score = 0;
     Quiz[] questionList = new Quiz[10];
+    List<Quiz>skippedQuestionList = new ArrayList<Quiz>();
     Quiz currentQuiz;
 
     int correctAnswerCounter = 0;
@@ -41,8 +44,8 @@ public class Game extends JFrame {
         JOptionPane.showMessageDialog(null, "Are you ready?\nTo Start Press 'OK'", "Game of Thrones Quiz", JOptionPane.DEFAULT_OPTION);
         this.panel = new JPanel();
         this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.PAGE_AXIS));
-        JPanel questionPanel = new JPanel();
 
+        JPanel questionPanel = new JPanel();
         this.questionLabel = new JLabel("Question");
         questionPanel.add(questionLabel);
 
@@ -70,14 +73,14 @@ public class Game extends JFrame {
 
         JPanel messagePanel = new JPanel();
 
-        this.messageLabel = new JLabel("Message");
+        this.messageLabel = new JLabel("Your Score is: " + correctAnswerCounter);
         messagePanel.add(messageLabel);
+//
+//        panel.add(messagePanel);
 
-        panel.add(messagePanel);
-
-        this.scoreCounter = new JLabel("0");
-        updateScore();
-        panel.add(scoreCounter);
+//        this.scoreCounter = new JLabel("0");
+//        updateScore();
+//        panel.add(scoreCounter);
     }
 
     public int getSelectedIndex() {
@@ -115,32 +118,53 @@ public class Game extends JFrame {
             case 1:
                 if (isRightAnswer()) {
                     score++;
-                    updateScore();
+//                    updateScore();
                 }
                 nextQuestion();
                 break;
             case 0:
-                endScreen();
+                finishGame();
                 break;
         }
     }
 
     public void updateScore() {
-        scoreCounter.setText("Score: " + score);
+        scoreCounter.setText("YOUR SCORE: " + score);
     }
 
     public boolean isRightAnswer() {
         return currentQuiz.getRightAnswerIndex() == getSelectedIndex();
     }
 
-    public void nextQuestion(){
-        System.out.println("next question called");
+    public void addToSkipedArray(Quiz quiz){
 
-        questionCounter ++;
+        skippedQuestionList.add(quiz);
+    }
+
+    public void popUpMessage(){
+        String[] buttonsArray = {"Leave for later", "Go back"};
+        int buttonSelection = JOptionPane.showOptionDialog(null, this.panel, "Please select 1 answer", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, buttonsArray, null);
+
+        System.out.println("FUCKING SELECTED " + buttonSelection);
+        switch (buttonSelection){
+            case 1:
+                break;
+            case 0:
+                addToSkipedArray(currentQuiz);
+                questionCounter ++;
+                break;
+        }
+    }
+
+    public void nextQuestion(){
+        if (buttonGroup.getSelection() != null) {
+            questionCounter ++;
+        } else {
+            popUpMessage();
+        }
+
         if (questionCounter >= questionList.length){
-            endScreen();
-            System.out.println("The End!");
-            System.out.println(correctAnswerCounter);
+            finishGame();
         } else {
             updateScreen();
         }
@@ -154,12 +178,8 @@ public class Game extends JFrame {
         updateScreen();
     }
 
-    public void saveForNext(){
-
-    }
-
     public void finishGame(){
-        new End(correctAnswerCounter);
+        new End(score);
     }
 
     public void loadQuestions(){
@@ -169,11 +189,6 @@ public class Game extends JFrame {
 
     }
 
-    public void endScreen(){
-        setVisible(false);
-        new End(correctAnswerCounter);
-    }
-
     public void updateScreen() {
         currentQuiz = questionList[questionCounter];
         questionLabel.setText(currentQuiz.getQuestion());
@@ -181,7 +196,6 @@ public class Game extends JFrame {
         radioButtonB.setText(currentQuiz.getAnswer2());
         radioButtonC.setText(currentQuiz.getAnswer3());
         radioButtonD.setText(currentQuiz.getAnswer4());
-        messageLabel.setText("Please select ONE answer");
         radioButtons();
     }
 
