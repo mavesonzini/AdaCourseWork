@@ -7,32 +7,42 @@ import java.util.Arrays;
  */
 public class StringScanner {
 
-    public Quiz[] StringScanner (){
+    public Quiz[] StringScanner (int difficulty){
 
         Scanner scanQuestion;
         Scanner scanAnswer;
-        Scanner scanCorrectAnswers;
+        String pathNameQuestion = "";
+        String pathNameAnswer = "";
+
+
+        if (difficulty == 1){
+            pathNameQuestion = "EasyQuestions.txt";
+            pathNameAnswer = "EasyAnswers.txt";
+        } else if (difficulty == 0){
+            pathNameQuestion = "HardQuestions.txt";
+            pathNameAnswer = "HardAnswers.txt";
+
+        }
+
         int i = 0;
         int j = 0;
 
         String[] questionsArray = new String[10];
         String[][] answersArray = new String[10][5];
-        String[] correctAnswersArray = new String[10];
 
         Quiz[] parsedQuestions = new Quiz[10];
 
         try {
-            File easyQuestions = new File("EasyQuestions.txt");
-            scanQuestion = new Scanner(easyQuestions);
+            File questions = new File(pathNameQuestion);
+            scanQuestion = new Scanner(questions);
 
             while (scanQuestion.hasNextLine()){
                 questionsArray[i] = scanQuestion.nextLine();
                 i++;
             }
-//            System.out.println(Arrays.toString(questionsArray));
 
-            File easyAnswers = new File("EasyAnswers.txt");
-            scanAnswer = new Scanner(easyAnswers).useDelimiter(", ");
+            File answers = new File(pathNameAnswer);
+            scanAnswer = new Scanner(answers).useDelimiter(", ");
 
             i = 0;
             j = 0;
@@ -55,21 +65,12 @@ public class StringScanner {
 
             for (i = 0; i < 10; i++){
                 String individualQuestion = questionsArray[i];
-                String[] answers = answersArray[i];
-                System.out.println(answers[4]);
+                String[] answer = answersArray[i];
+                System.out.println(answer[4]);
 
-                int index = Integer.parseInt(answers[4]);
-                Quiz quiz = new Quiz(individualQuestion, answers[0], answers[1], answers[2], answers[3], index);
+                int index = Integer.parseInt(answer[4]);
+                Quiz quiz = new Quiz(individualQuestion, answer[0], answer[1], answer[2], answer[3], index);
                 parsedQuestions[i] = quiz;
-            }
-
-            File correctAnswers = new File("correctAnswers.txt");
-            scanCorrectAnswers = new Scanner(correctAnswers);
-
-            i = 0;
-            while (scanCorrectAnswers.hasNextLine()){
-                correctAnswersArray[i] = scanCorrectAnswers.nextLine();
-                i++;
             }
 
         } catch (IOException ioe){

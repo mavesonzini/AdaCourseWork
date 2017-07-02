@@ -24,7 +24,7 @@ public class Game extends JFrame {
     ButtonGroup buttonGroup;
 
     int score = 0;
-    Quiz[] questionList = new Quiz[10];
+    Quiz[] questionList;
     List<Quiz>skippedQuestionList = new ArrayList<Quiz>();
     Quiz currentQuiz;
 
@@ -32,16 +32,22 @@ public class Game extends JFrame {
     int questionCounter = 0;
 
     public Game() {
-        loadQuestions();
+        chooseGame();
         createButtons();
         updateScreen();
     }
 
+    public void chooseGame(){
+        String[] buttonsArray = {"Hard", "Easy"};
+        int buttonOption = JOptionPane.showOptionDialog(null, "Choose the level of difficulty", "How awesome are you?", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION,null, buttonsArray,null);
+        loadQuestions(buttonOption);
+    }
+    
     public void createButtons() {
         this.buttonGroup = new ButtonGroup();
         JRadioButton radioButton = new JRadioButton();
 
-        JOptionPane.showMessageDialog(null, "Are you ready?\nTo Start Press 'OK'", "Game of Thrones Quiz", JOptionPane.DEFAULT_OPTION);
+        JOptionPane.showMessageDialog(null, "Are you ready?\nTo Start Press 'OK'", "The toughest Game of Thrones trivia quiz in the Seven Kingdoms (Spoilers Ahoy!)\n", JOptionPane.DEFAULT_OPTION);
         this.panel = new JPanel();
         this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.PAGE_AXIS));
 
@@ -75,12 +81,6 @@ public class Game extends JFrame {
 
         this.messageLabel = new JLabel("Your Score is: " + correctAnswerCounter);
         messagePanel.add(messageLabel);
-//
-//        panel.add(messagePanel);
-
-//        this.scoreCounter = new JLabel("0");
-//        updateScore();
-//        panel.add(scoreCounter);
     }
 
     public int getSelectedIndex() {
@@ -118,7 +118,6 @@ public class Game extends JFrame {
             case 1:
                 if (isRightAnswer()) {
                     score++;
-//                    updateScore();
                 }
                 nextQuestion();
                 break;
@@ -137,15 +136,12 @@ public class Game extends JFrame {
     }
 
     public void addToSkipedArray(Quiz quiz){
-
         skippedQuestionList.add(quiz);
     }
 
     public void popUpMessage(){
         String[] buttonsArray = {"Leave for later", "Go back"};
         int buttonSelection = JOptionPane.showOptionDialog(null, this.panel, "Please select 1 answer", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, buttonsArray, null);
-
-        System.out.println("FUCKING SELECTED " + buttonSelection);
         switch (buttonSelection){
             case 1:
                 break;
@@ -156,6 +152,12 @@ public class Game extends JFrame {
         }
     }
 
+    public void updateQuestionArray(){
+        for (int i = 0; i < skippedQuestionList.size(); i ++) {
+            questionList[questionList.length + i] = skippedQuestionList.get(i);
+        }
+    }
+
     public void nextQuestion(){
         if (buttonGroup.getSelection() != null) {
             questionCounter ++;
@@ -163,8 +165,15 @@ public class Game extends JFrame {
             popUpMessage();
         }
 
-        if (questionCounter >= questionList.length){
-            finishGame();
+        if (questionCounter >= questionList.length) {
+            if (skippedQuestionList.size() > 0) {
+                for (int i = 0; i < questionList.length; i ++) {
+                    System.out.println("PUTO ARRAY " + questionList[i].getQuestion());
+                }
+                updateQuestionArray();
+            } else{
+                finishGame();
+            }
         } else {
             updateScreen();
         }
@@ -182,10 +191,10 @@ public class Game extends JFrame {
         new End(score);
     }
 
-    public void loadQuestions(){
+    public void loadQuestions(int difficulty){
         System.out.println("load questions called");
 
-        questionList =  scan.StringScanner();
+        questionList =  scan.StringScanner(difficulty);
 
     }
 
