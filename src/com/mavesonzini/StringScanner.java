@@ -1,7 +1,8 @@
 package com.mavesonzini;
-import java.util.Scanner;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.io.*;
-import java.util.Arrays;
+
 /**
  * Created by mave on 31/05/2017.
  */
@@ -40,6 +41,8 @@ public class StringScanner {
                 questionsArray[i] = scanQuestion.nextLine();
                 i++;
             }
+            System.out.println("QUESTIONS " + Arrays.deepToString(questionsArray));
+
 
             File answers = new File(pathNameAnswer);
             scanAnswer = new Scanner(answers).useDelimiter(", ");

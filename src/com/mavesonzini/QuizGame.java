@@ -47,5 +47,6 @@ public class QuizGame {
         radioButtonB.setText(quiz.getAnswer2());
         radioButtonC.setText(quiz.getAnswer3());
         radioButtonD.setText(quiz.getAnswer4());
+
     }
 }

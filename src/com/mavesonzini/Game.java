@@ -19,6 +19,7 @@ public class Game extends JFrame {
     JLabel scoreCounter;
     JLabel questionLabel;
     JLabel messageLabel;
+    JLabel messageLabel2;
 
     JPanel panel;
     ButtonGroup buttonGroup;
@@ -35,6 +36,11 @@ public class Game extends JFrame {
         chooseGame();
         createButtons();
         updateScreen();
+
+        radioButtonA.setEnabled(true);
+        radioButtonB.setEnabled(true);
+        radioButtonC.setEnabled(true);
+        radioButtonD.setEnabled(true);
     }
 
     public void chooseGame(){
@@ -47,7 +53,7 @@ public class Game extends JFrame {
         this.buttonGroup = new ButtonGroup();
         JRadioButton radioButton = new JRadioButton();
 
-        JOptionPane.showMessageDialog(null, "Are you ready?\nTo Start Press 'OK'", "The toughest Game of Thrones trivia quiz in the Seven Kingdoms (Spoilers Ahoy!)\n", JOptionPane.DEFAULT_OPTION);
+        JOptionPane.showMessageDialog(null, "The toughest Game of Thrones \ntrivia quiz in the Seven \nKingdoms (Spoilers Ahoy!)\n", "Are you ready?", JOptionPane.DEFAULT_OPTION);
         this.panel = new JPanel();
         this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.PAGE_AXIS));
 
@@ -75,6 +81,9 @@ public class Game extends JFrame {
         buttonGroup.add(radioButtonD);
         answersPanel.add(radioButtonD);
 
+        this.messageLabel2 = new JLabel("");
+        panel.add(messageLabel2);
+
         panel.add(answersPanel);
 
         JPanel messagePanel = new JPanel();
@@ -99,7 +108,7 @@ public class Game extends JFrame {
 
         buttonGroup.clearSelection();
 
-        String[] buttonsArray = {"Finish", "Next", "Previous"};
+        String[] buttonsArray = {"Finish","Save for later", "Next", "Previous"};
 
         int buttonOption = JOptionPane.showOptionDialog(null, this.panel, "Do you know the answer???", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, buttonsArray, null);
         System.out.println("button option selected");
@@ -112,23 +121,21 @@ public class Game extends JFrame {
         System.out.println(getSelectedIndex());
 
         switch (buttonOption){
-            case 2:
-                previousQuestion();
+            case 0: //FINISH
+                finishGame();
                 break;
-            case 1:
+            case 1: //SAVE4LATER
+                addToSkipedArray(currentQuiz);
+            case 2: //NEXT
                 if (isRightAnswer()) {
                     score++;
                 }
                 nextQuestion();
                 break;
-            case 0:
-                finishGame();
+            case 3: //PREV
+                previousQuestion();
                 break;
         }
-    }
-
-    public void updateScore() {
-        scoreCounter.setText("YOUR SCORE: " + score);
     }
 
     public boolean isRightAnswer() {
@@ -137,40 +144,31 @@ public class Game extends JFrame {
 
     public void addToSkipedArray(Quiz quiz){
         skippedQuestionList.add(quiz);
-    }
-
-    public void popUpMessage(){
-        String[] buttonsArray = {"Leave for later", "Go back"};
-        int buttonSelection = JOptionPane.showOptionDialog(null, this.panel, "Please select 1 answer", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, buttonsArray, null);
-        switch (buttonSelection){
-            case 1:
-                break;
-            case 0:
-                addToSkipedArray(currentQuiz);
-                questionCounter ++;
-                break;
-        }
+        questionCounter ++;
     }
 
     public void updateQuestionArray(){
-        for (int i = 0; i < skippedQuestionList.size(); i ++) {
+        for (int i = 1; i < skippedQuestionList.size(); i ++) {
             questionList[questionList.length + i] = skippedQuestionList.get(i);
+            System.out.println("QUESTIONLIST LENGTH " + questionList.length);
+            System.out.println("SKIPPED LENGTH " + skippedQuestionList.size());
         }
     }
 
     public void nextQuestion(){
         if (buttonGroup.getSelection() != null) {
+            this.messageLabel2.setVisible(false);
             questionCounter ++;
         } else {
-            popUpMessage();
+            this.messageLabel2.setText("Please, select 1 answer! or click SAVE FOR LATER");
         }
 
         if (questionCounter >= questionList.length) {
             if (skippedQuestionList.size() > 0) {
+                System.out.println("SKIPED QUESTION ARRAY SIZE " + skippedQuestionList.size());
                 for (int i = 0; i < questionList.length; i ++) {
-                    System.out.println("PUTO ARRAY " + questionList[i].getQuestion());
+                    updateQuestionArray();
                 }
-                updateQuestionArray();
             } else{
                 finishGame();
             }
@@ -193,7 +191,6 @@ public class Game extends JFrame {
 
     public void loadQuestions(int difficulty){
         System.out.println("load questions called");
-
         questionList =  scan.StringScanner(difficulty);
 
     }
